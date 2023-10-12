@@ -2,25 +2,30 @@ pipeline {
     agent {
         docker {
             image 'node:16' // Use Node 16 Docker image as the build agent
-            args '-v /var/run/docker.sock:/var/run/docker.sock' // Mount Docker socket for Docker-in-Docker
+            args '-u root'  // Use root user to avoid permission issues
         }
     }
     
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm // Checkout your source code
+            }
+        }
+
         stage('Build') {
             steps {
-                sh 'npm install --save' // Run npm install --save
+                sh 'npm install --save' // Run the npm install command
             }
         }
     }
     
     post {
         success {
-            echo 'Build successful!'
+            echo 'Build and npm install successful'
         }
         failure {
-            echo 'Build failed!'
+            echo 'Build or npm install failed'
         }
     }
 }
-
