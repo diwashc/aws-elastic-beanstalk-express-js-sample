@@ -18,6 +18,12 @@ pipeline {
                 sh 'npm install --save' // Run the npm install command
             }
         }
+	stage('Check Node.js and npm') {
+    		steps {
+        		sh 'node -v'
+        		sh 'npm -v'
+    		}
+	}
     }
     
     post {
