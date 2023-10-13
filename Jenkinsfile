@@ -1,40 +1,29 @@
 pipeline {
-    agent any
-
+    agent {
+        docker {
+            image 'docker:20'
+            args '--privileged -v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-
         stage('Build') {
             steps {
-                script {
-                    // Run Docker-in-Docker
-                    docker.image('docker:20').inside('-u root') {
-                        // Pull and run Docker containers
-                        sh 'docker pull node:16'
-                        sh 'docker run node:16 npm install'
-                    }
-                }
+                sh 'docker build -t myapp .'
             }
         }
-
-        stage('Check Node.js and npm') {
-            steps {
-                sh 'node -v'
-                sh 'npm -v'
-            }
-        }
+        // Add more stages as needed
     }
-
     post {
         success {
-            echo 'Build and npm install successful'
+            echo 'Build successful'
         }
         failure {
-            echo 'Build or npm install failed'
+            echo 'Build failed'
         }
     }
 }
