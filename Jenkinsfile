@@ -16,6 +16,19 @@ pipeline {
                 sh 'docker build -t myapp .'
             }
         }
+stage('Install Docker') {
+    steps {
+        sh 'curl -fsSL https://get.docker.com -o get-docker.sh'
+        sh 'sh get-docker.sh'
+        sh 'usermod -aG docker jenkins'  // Add Jenkins to the Docker group
+        sh 'docker --version'  // Verify Docker installation
+    }
+}
+stage('Add Jenkins to Docker Group') {
+    steps {
+        sh 'usermod -aG docker jenkins'
+    }
+}
         // Add more stages as needed
     }
     post {
