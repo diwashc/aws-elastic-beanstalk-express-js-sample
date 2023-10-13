@@ -6,6 +6,14 @@ pipeline {
         }
     }
     stages {
+
+stage('Run Docker Commands') {
+    steps {
+        script {
+            sh 'sudo docker --version' // Use sudo to run Docker commands as root
+        }
+    }
+}
         stage('Checkout') {
             steps {
                 checkout scm
