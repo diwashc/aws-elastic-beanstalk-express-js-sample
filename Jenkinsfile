@@ -1,11 +1,11 @@
 pipeline {
     agent {
         docker {
-            image 'node:16' // Use Node 16 Docker image as the build agent
-            args '--user jenkins:jenkins'  // Specify the Jenkins user within the container
+            image 'docker:20' // Use a Docker image with Docker installed
+            args '-v /var/run/docker.sock:/var/run/docker.sock' // Mount the Docker socket
         }
     }
-
+    
     stages {
         stage('Checkout') {
             steps {
@@ -15,14 +15,15 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'npm install --save' // Run the npm install command
+                sh 'docker pull node:16' // Pull the Node 16 image
+                sh 'docker run --rm node:16 npm install' // Run npm install inside a Docker container
             }
         }
         
         stage('Check Node.js and npm') {
             steps {
-                sh 'node -v'
-                sh 'npm -v'
+                sh 'docker run --rm node:16 node -v' // Check Node.js version
+                sh 'docker run --rm node:16 npm -v' // Check npm version
             }
         }
     }
