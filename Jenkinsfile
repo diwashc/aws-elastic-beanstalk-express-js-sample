@@ -1,33 +1,34 @@
 pipeline {
-    agent {
-        docker {
-            image 'docker:20' // Use a Docker image with Docker installed
-            args '-v /var/run/docker.sock:/var/run/docker.sock' // Mount the Docker socket
-        }
-    }
-    
+    agent any
+
     stages {
         stage('Checkout') {
             steps {
-                checkout scm // Checkout your source code
+                checkout scm
             }
         }
 
         stage('Build') {
             steps {
-                sh 'docker pull node:16' // Pull the Node 16 image
-                sh 'docker run --rm node:16 npm install' // Run npm install inside a Docker container
+                script {
+                    // Run Docker-in-Docker
+                    docker.image('docker:20').inside('-u root') {
+                        // Pull and run Docker containers
+                        sh 'docker pull node:16'
+                        sh 'docker run node:16 npm install'
+                    }
+                }
             }
         }
-        
+
         stage('Check Node.js and npm') {
             steps {
-                sh 'docker run --rm node:16 node -v' // Check Node.js version
-                sh 'docker run --rm node:16 npm -v' // Check npm version
+                sh 'node -v'
+                sh 'npm -v'
             }
         }
     }
-    
+
     post {
         success {
             echo 'Build and npm install successful'
