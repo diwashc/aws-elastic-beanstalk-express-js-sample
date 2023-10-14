@@ -1,8 +1,7 @@
 pipeline {
-     agent { docker { image 'node:16'
-             args '-v /var/run/docker.sock:/var/run/docker.sock' 
-	     args "-v ${env.WORKSPACE}:/var/jenkins_home/workspace/21255001_Project2_Pipeline:rw,z"
-	     args "-v ${env.WORKSPACE}@tmp:/var/jenkins_home/workspace/21255001_Project2_Pipeline@tmp:rw,z"
+     agent { docker { 
+	     image 'node:16'
+             args '-u 0:0'
          }
      }
 
@@ -11,15 +10,6 @@ pipeline {
              steps {
                  sh 'npm install --save' 
              }
-         }
-     }
-
-     post {
-         success {
-             echo 'Build successful!'
-         }
-         failure {
-             echo 'Build failed!'
          }
      }
  }
